@@ -1,0 +1,18 @@
+{
+  "imports": {
+    "@hono/zod-validator": "npm:@hono/zod-validator@^0.4.3",
+    "hono": "npm:hono@^4.7.4",
+    "typegoose": "npm:@typegoose/typegoose@^12.13.0",
+    "mongoose": "npm:mongoose@^8.12.1",
+    "zod": "npm:zod@^3.24.2"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-read --allow-sys --allow-env --env-file main.ts"
+  },
+  "compilerOptions": {
+    "jsx": "precompile",
+    "jsxImportSource": "hono/jsx",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
