@@ -13,7 +13,7 @@ export function TryoutEditor({ tryout, onSubmit }: { tryout?: FullTryoutInfo, on
     return (
         <form className="w-full flex flex-col gap-5" onSubmit={(e) => {
             e.preventDefault();
-            onSubmit({ _id: tryout?._id || "", title, smallDescription, fullDescription, categories: [], questions, createdAt: tryout?.createdAt || "" });
+            onSubmit({ _id: tryout?._id || "", title, smallDescription, fullDescription, categories: [], questions, createdAt: tryout?.createdAt || "", submissionCount: tryout?.submissionCount || 0 });
         }}>
             <div className="w-full flex justify-between items-center">
                 <p className="text-2xl font-bold">Tryout Editor</p>

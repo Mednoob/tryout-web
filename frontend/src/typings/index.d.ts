@@ -17,14 +17,15 @@ export interface Question {
     answer: boolean;
 }
 
-export interface Tryout {
+export interface TryoutInfo {
     _id: string;
     title: string;
     smallDescription?: string;
     fullDescription?: string;
     createdAt: string;
     categories: string[];
-    questionCount: number;
+    questions: string[];
+    submissionCount: number;
 }
 
 export interface FullTryoutInfo {
@@ -35,6 +36,7 @@ export interface FullTryoutInfo {
     createdAt: string;
     categories: string[];
     questions: Question[];
+    submissionCount: number;
 }
 
 export interface APIResult<T> {

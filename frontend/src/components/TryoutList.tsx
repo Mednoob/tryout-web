@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 
 import { OutlinedButton } from "./Buttons";
-import { Tryout } from "../typings";
+import { TryoutInfo } from "../typings";
 
-export function TryoutList({ tryouts }: { tryouts: Tryout[] }) {
+export function TryoutList({ tryouts }: { tryouts: TryoutInfo[] }) {
     return (
         <div className="flex flex-col items-center w-full h-full">
             {tryouts.length
@@ -16,8 +16,11 @@ export function TryoutList({ tryouts }: { tryouts: Tryout[] }) {
                                     <p>{tryout.smallDescription ?? "No description"}</p>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <Link to="/tryout/$tryoutId" params={{ tryoutId: tryout._id }} className="hover:underline">
+                                    <Link to="/tryout/$tryoutId" params={{ tryoutId: tryout._id }}>
                                         <OutlinedButton color="normal">Details</OutlinedButton>
+                                    </Link>
+                                    <Link to="/tryout/$tryoutId/attempt" params={{ tryoutId: tryout._id }}>
+                                        <OutlinedButton color="normal">Attempt</OutlinedButton>
                                     </Link>
                                 </div>
                             </div>

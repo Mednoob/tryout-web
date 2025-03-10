@@ -3,7 +3,8 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
-import { APITryoutInfo } from "../typings/index.d.ts";
+import { APIFullTryoutInfo, APITryoutInfo } from "../typings/index.d.ts";
+import { SubmissionModel } from "../models/Submission.ts";
 import { TryoutClass, TryoutModel } from "../models/Tryout.ts";
 import { CategoryModel } from "../models/Category.ts";
 import mongoose from "mongoose";
@@ -21,7 +22,7 @@ const createSchema = z.object({
     })))
 });
 
-function toInfo(tryout: TryoutClass & { _id: mongoose.Types.ObjectId }): APITryoutInfo {
+function toInfo(tryout: TryoutClass & { _id: mongoose.Types.ObjectId }, submissionCount: number): APITryoutInfo {
     return {
         _id: tryout._id,
         title: tryout.title,
@@ -29,7 +30,8 @@ function toInfo(tryout: TryoutClass & { _id: mongoose.Types.ObjectId }): APITryo
         smallDescription: tryout.smallDescription || "",
         createdAt: tryout.createdAt,
         categories: tryout.categories,
-        questionCount: tryout.questions.length
+        questions: tryout.questions.map(x => x.question),
+        submissionCount
     };
 }
 
@@ -60,8 +62,11 @@ tryoutRouter.post("/", zValidator("json", createSchema), async (c) => {
 
 tryoutRouter.get("/", async c => {
     const tryouts = await TryoutModel.find();
+    const submissions = await SubmissionModel.find();
 
-    return c.json({ status: 200, result: tryouts.map(toInfo) });
+    return c.json({
+        status: 200,
+        result: tryouts.map(tryout => toInfo(tryout, submissions.filter(x => x.tryoutId === tryout._id.toString()).length)) });
 });
 
 tryoutRouter.get("/:id", async c => {
@@ -70,7 +75,40 @@ tryoutRouter.get("/:id", async c => {
         return c.json({ status: 400, message: `Tryout with id '${c.req.param().id}' doesn't exists.` });
     }
 
-    return c.json({ status: 200, result: tryout });
+    const submissions = await SubmissionModel.find({ tryoutId: tryout._id.toString() });
+
+    return c.json({ status: 200, result: toInfo(tryout, submissions.length) });
+});
+
+tryoutRouter.get("/:id/questions", async c => {
+    const tryout = await TryoutModel.findById(c.req.param().id);
+    if (!tryout) {
+        return c.json({ status: 400, message: `Tryout with id '${c.req.param().id}' doesn't exists.` });
+    }
+
+    return c.json({ status: 200, result: tryout.questions.map(x => x.question) });
+});
+
+tryoutRouter.get("/:id/full-info", async c => {
+    const tryout = await TryoutModel.findById(c.req.param().id);
+    if (!tryout) {
+        return c.json({ status: 400, message: `Tryout with id '${c.req.param().id}' doesn't exists.` });
+    }
+
+    const submissions = await SubmissionModel.find({ tryoutId: tryout._id.toString() });
+
+    const fullInfo: APIFullTryoutInfo = {
+        _id: tryout._id,
+        title: tryout.title,
+        fullDescription: tryout.fullDescription || "",
+        smallDescription: tryout.smallDescription || "",
+        createdAt: tryout.createdAt,
+        categories: tryout.categories,
+        questions: tryout.questions,
+        submissionCount: submissions.length
+    };
+
+    return c.json({ status: 200, result: fullInfo });
 });
 
 tryoutRouter.put("/:id", zValidator("json", createSchema), async c => {
@@ -79,6 +117,11 @@ tryoutRouter.put("/:id", zValidator("json", createSchema), async c => {
     const tryoutExists = await TryoutModel.findById(c.req.param().id);
     if (!tryoutExists) {
         return c.json({ status: 400, message: `Tryout with id '${c.req.param().id}' doesn't exists.`});
+    }
+
+    const submissions = await SubmissionModel.find({ tryoutId: c.req.param().id });
+    if (submissions.length > 0) {
+        return c.json({ status: 400, message: `Tryout with id '${c.req.param().id}' has submissions, can't be updated.` });
     }
 
     const tryout = {

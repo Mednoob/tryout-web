@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 import axios from "axios";
 import useSWR from "swr";
 
@@ -12,11 +13,18 @@ export const Route = createFileRoute("/admin/tryout/edit/$tryoutId")({
 
 function RouteComponent() {
     const { tryoutId } = Route.useParams();
-    const { data, error } = useSWR(`${TRYOUT_API}/${tryoutId}`, async (url) => {
+    const { data, error } = useSWR(`${TRYOUT_API}/${tryoutId}/full-info`, async (url) => {
         const res = await axios.get<APIResult<FullTryoutInfo>>(url);
 
         return res.data;
     });
+
+    useEffect(() => {
+        if (!data) return;
+        if (data.result.submissionCount) {
+            redirect({ to: "/admin/tryout" });
+        }
+    }, [data]);
 
     return (
         <div className="w-full flex justify-center p-20">
@@ -25,7 +33,7 @@ function RouteComponent() {
             {data && <TryoutEditor tryout={data.result} onSubmit={async (tryout) => {
                 await axios.put(`${TRYOUT_API}/${tryoutId}`, tryout);
 
-                window.location.href = "/admin/tryout";
+                redirect({ to: "/admin/tryout" });
             }} />}
         </div>
     )

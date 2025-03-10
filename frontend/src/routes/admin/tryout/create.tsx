@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import axios from "axios";
 
 import { TryoutEditor } from "../../../components/TryoutEditor";
@@ -14,7 +14,7 @@ function RouteComponent() {
             <TryoutEditor onSubmit={async (tryout) => {
                 await axios.post(TRYOUT_API, tryout);
 
-                window.location.href = "/admin/tryout";
+                redirect({ to: "/admin/tryout" });
             }} />
         </div>
     )

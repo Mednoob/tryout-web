@@ -3,7 +3,7 @@ import useSWRImmutable from "swr/immutable";
 import axios from "axios";
 
 import { TryoutAttempt } from "../../../components/TryoutAttempt";
-import { APIResult, FullTryoutInfo } from "../../../typings";
+import { APIResult, TryoutInfo } from "../../../typings";
 import { TRYOUT_API } from "../../../utils/api";
 
 export const Route = createFileRoute('/tryout/$tryoutId/attempt')({
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/tryout/$tryoutId/attempt')({
 function RouteComponent() {
     const { tryoutId } = Route.useParams();
     const { data, error, isLoading } = useSWRImmutable(`${TRYOUT_API}/${tryoutId}`, async (url) => {
-        const res = await axios.get<APIResult<FullTryoutInfo>>(url);
+        const res = await axios.get<APIResult<TryoutInfo>>(url);
 
         return res.data;
     });

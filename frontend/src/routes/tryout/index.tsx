@@ -4,7 +4,7 @@ import useSWRImmutable from "swr/immutable";
 import { TryoutList } from "../../components/TryoutList";
 
 import { TRYOUT_API } from "../../utils/api";
-import { APIResult, Tryout } from "../../typings";
+import { APIResult, TryoutInfo } from "../../typings";
 
 export const Route = createFileRoute("/tryout/")({
   component: RouteComponent,
@@ -16,7 +16,7 @@ function RouteComponent() {
             method: "GET"
         });
 
-        return res.json() as Promise<APIResult<Tryout[]>>;
+        return res.json() as Promise<APIResult<TryoutInfo[]>>;
     });
 
     return (

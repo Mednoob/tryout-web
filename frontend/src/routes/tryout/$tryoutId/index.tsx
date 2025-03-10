@@ -1,5 +1,5 @@
 import useSWRImmutable from "swr/immutable";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { BoxButton } from "../../../components/Buttons";
 import { Markdown } from "../../../components/Markdown";
@@ -40,20 +40,17 @@ function RouteComponent() {
                             <Markdown>{data.result.fullDescription ?? ""}</Markdown>
                         </div>
                     </div>
-                    <div className="h-full flex flex-col px-10 gap-5 border-l-2 border-gray-300">
-                        <div className="flex flex-col gap-2">
-                            <p className="font-bold">Category</p>
-                            {
-                                data.result.categories.length
-                                    ? data.result.categories.map((category) => (
-                                        <p key={category}>{category}</p>
-                                    ))
-                                    : <p className="text-sm">No category</p>
-                            }
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <p>{data.result.questions.length} Questions</p>
-                            <BoxButton color="normal">Attempt</BoxButton>
+                    <div className="h-full px-10 gap-5 border-l-2 border-gray-300">
+                        <div className="flex flex-col gap-3 items-center">
+                            <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
+                                <p>Questions</p>
+                                <p className="w-min">{data.result.questions.length}</p>
+                                <p>Submissions</p>
+                                <p className="w-min">{data.result.submissionCount}</p>
+                            </div>
+                            <Link to="/tryout/$tryoutId/attempt" params={{ tryoutId }}>
+                                <BoxButton color="normal">Attempt</BoxButton>
+                            </Link>
                         </div>
                     </div>
                 </div>

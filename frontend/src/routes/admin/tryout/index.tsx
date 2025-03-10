@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { BoxButton, OutlinedButton } from "../../../components/Buttons";
 
 import { TRYOUT_API } from "../../../utils/api";
-import { APIResult, Tryout } from "../../../typings";
+import { APIResult, TryoutInfo } from "../../../typings";
 
 export const Route = createFileRoute('/admin/tryout/')({
   component: RouteComponent,
@@ -19,7 +19,7 @@ function RouteComponent() {
             method: "GET"
         });
 
-        return res.json() as Promise<APIResult<Tryout[]>>;
+        return res.json() as Promise<APIResult<TryoutInfo[]>>;
     }, { revalidateOnFocus: false, revalidateOnReconnect: false, revalidateOnMount: true });
 
     return (
@@ -47,9 +47,11 @@ function RouteComponent() {
                                             <Link to="/tryout/$tryoutId" params={{ tryoutId: tryout._id }}>
                                                 <OutlinedButton color="normal" disabled={isDisabled}>Details</OutlinedButton>
                                             </Link>
-                                            <Link to="/admin/tryout/edit/$tryoutId" params={{ tryoutId: tryout._id }}>
-                                                <OutlinedButton color="warn" disabled={isDisabled}>Edit</OutlinedButton>
-                                            </Link>
+                                            {tryout.submissionCount === 0 && (
+                                                <Link to="/admin/tryout/edit/$tryoutId" params={{ tryoutId: tryout._id }}>
+                                                    <OutlinedButton color="warn" disabled={isDisabled}>Edit</OutlinedButton>
+                                                </Link>
+                                            )}
                                             <OutlinedButton color="danger" disabled={isDisabled} onClick={
                                                 async () => {
                                                     setIsDisabled(true);

@@ -1,11 +1,12 @@
+import { redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import axios from "axios";
 
 import { SUBMISSION_API } from "../utils/api";
 import { BoxButton } from "./Buttons";
-import { FullTryoutInfo } from "../typings";
+import { TryoutInfo } from "../typings";
 
-export function TryoutAttempt({ tryout }: { tryout: FullTryoutInfo }) {
+export function TryoutAttempt({ tryout }: { tryout: TryoutInfo }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<(boolean | null)[]>(new Array(tryout.questions.length).fill(null));
@@ -32,7 +33,7 @@ export function TryoutAttempt({ tryout }: { tryout: FullTryoutInfo }) {
 
         if (submitted.status === 200) {
             const data = submitted.data as { result: string };
-            window.location.href = `/submission/${data.result}`;
+            redirect({ to: "/submission/$submissionId", params: { submissionId: data.result } });
         }
     }
 
@@ -55,7 +56,7 @@ export function TryoutAttempt({ tryout }: { tryout: FullTryoutInfo }) {
                 </div>
                 <div className="w-full flex flex-col justify-between h-full px-7 pt-7">
                     <div>
-                        <p className="font-bold text-lg">{currentQuestionIndex + 1}. {tryout.questions[currentQuestionIndex].question}</p>
+                        <p className="font-bold text-lg">{currentQuestionIndex + 1}. {tryout.questions[currentQuestionIndex]}</p>
                         <div className="mt-5">
                             <div className="block">
                                 <input
